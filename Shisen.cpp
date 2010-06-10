@@ -9,10 +9,18 @@
 #include "Prefs.h"
 #include <FindDirectory.h>
 #include <Path.h>
-
+#include <Roster.h>
+#include "CompileDefs.h"
+#ifdef USE_YLANGUAGE
+#include "YLanguageClass.h"
+#endif
 /*
  * $Id: Shisen.cpp,v 1.3 1999/07/09 05:21:55 baron Exp baron $
  */
+ 
+#include <stdio.h>
+
+void BuildLanguageList(void);
 
 int REGISTERED;
 int NAG;
@@ -33,6 +41,13 @@ system_info info;
 union split sp;
 app_info app;
 
+#ifdef USE_YLANGUAGE
+	Language.SetName("English");
+	if (Language.InitCheck() != B_OK)
+		printf("error loading language file (English\n");
+		
+	BuildLanguageList();
+#endif
 
 	REGISTERED = false;
 	NAG = false;
@@ -50,6 +65,9 @@ app_info app;
 		KEY = info.cpu_clock_speed;
 		KEY |= info.cpu_revision;
 	}
+	
+	// sanity check
+	if (!KEY) KEY = 0xbebebebe;
 	
 	//printf("key is %lx\n", KEY);
 	
@@ -139,7 +157,8 @@ thread_id id;
 		BStringView *str;
 		BBitmap *bmap;
 		
-		about = new BWindow(BRect(50, 50, 360, 170), "About BShisen",
+		about = new BWindow(BRect(50, 50, 360, 190), 
+			_("ABOUT_BSHISEN","About BShisen"),
 			B_TITLED_WINDOW, B_NOT_ZOOMABLE | B_NOT_RESIZABLE);
 		
 		back = new BView(about->Bounds(), NULL, B_FOLLOW_NONE, B_WILL_DRAW);
@@ -147,30 +166,68 @@ thread_id id;
 		about->AddChild(back);
 	
 	
-		str = new BStringView(BRect(100, 10, 310, 30), NULL, "BShisen 1.1.1");
+		str = new BStringView(BRect(100, 10, 310, 30), NULL, "BShisen 1.2pre");
+		str->SetFontSize(14);
+		str->SetHighColor(0,255,0);
+		back->AddChild(str);
+	
+		str = new BStringView(BRect(100, 35, 310, 55), NULL,
+			"(c) 1998-2001 Kelvin W Sherlock");
 		str->SetFontSize(12);
 		str->SetHighColor(0,255,0);
 		back->AddChild(str);
 	
-		str = new BStringView(BRect(100, 40-5, 310, 60-5), NULL,
-			"(c) 1998, 1999 Kelvin W Sherlock");
+		str = new BStringView(BRect(100, 60, 310, 80), NULL,
+			"kelvin@xbar.org");
 		str->SetFontSize(12);
 		str->SetHighColor(0,255,0);
 		back->AddChild(str);
-	
-		str = new BStringView(BRect(100, 70-10, 310, 90-10), NULL,
-			"kws@delphi.com");
-		str->SetFontSize(12);
-		str->SetHighColor(0,255,0);
-		back->AddChild(str);
-	
+
+
+#if BUILD == SHAREWARE	
 		if (!REGISTERED) //70, 90
 		{
-			str = new BStringView(BRect(100, 100-15, 310, 120-15), NULL, "UNREGISTERED - PLEASE REGISTER");
+			str = new BStringView(BRect(100, 85, 310, 105), NULL, "UNREGISTERED - PLEASE REGISTER");
 			str->SetFontSize(12);
 			str->SetHighColor(255,0,0);
 			back->AddChild(str);
 		}
+#endif
+
+#if BUILD == BEGROOVY
+	{
+			str = new BStringView(BRect(100, 95, 310, 110), NULL, 
+				"Get your groove on - BeGroovy");
+			str->SetFontSize(12);
+			str->SetHighColor(255,0,0);
+			back->AddChild(str);
+			
+			str = new BStringView(BRect(100, 110, 310, 130), NULL, 
+				"www.BeGroovy.com");
+			str->SetFontSize(14);
+			str->SetHighColor(255,0,0);
+			back->AddChild(str);
+	
+	}
+#endif
+
+#if BUILD == CUSTOM
+	{
+			str = new BStringView(BRect(100, 95, 310, 110), NULL, 
+				B_UTF8_OPEN_QUOTE "The rumors of my demise");
+			str->SetFontSize(12);
+			str->SetHighColor(255,0,0);
+			back->AddChild(str);
+			
+			str = new BStringView(BRect(100, 110, 310, 130), NULL, 
+				"have been greatly exaggerated" B_UTF8_CLOSE_QUOTE);
+			str->SetFontSize(12);
+			str->SetHighColor(255,0,0);
+			back->AddChild(str);
+	
+	}
+#endif
+
 		//bmap = BTranslationUtils::GetBitmap("S.tiff");
 		
 		bmap = BTranslationUtils::GetBitmap(B_RAW_TYPE, ABOUT_PIC_ID);

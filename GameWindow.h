@@ -50,6 +50,10 @@ enum
 	PREFERENCES_MITEM	= 'pref',
 	SOUND_MITEM			= 'snd_',
 	
+	STANDARD_MITEM = 'stdt',
+	TILES_MITEM = 'elit',
+	
+	
 	TILE_CTRL	= 'tile',
 
 
@@ -174,6 +178,7 @@ BMenu *FileM;
 BMenu *EditM;
 BMenu *GameM;
 BMenu *SizeM;
+BMenu *TileM;
 
 
 Tiles tiles;		// class which provides the BBitmaps for the tiles

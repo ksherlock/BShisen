@@ -23,6 +23,7 @@
 #include <SimpleGameSound.h>
 #include <Entry.h>
 #include <MediaFile.h>
+#include <OS.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -35,6 +36,8 @@
 #include "BitmapControl.h"
 #include "pics.h"
 #include "res.h"
+#include "CompileDefs.h"
+
 
 /*
  * $Id: GameWindow.cpp,v 1.11 1999/07/21 16:32:00 baron Exp baron $
@@ -86,12 +89,15 @@ BMenuItem *NewMItem;
  */ 
 	hall = new Hall;
 	prefs = new Prefs;
-
-	if (prefs->GetKey() == KEY)
+#if BUILD == SHAREWARE
+	//if (prefs->GetKey() == KEY)
+	if (prefs->GetKey() != 0)
 	{
 		REGISTERED = true;
 	}
-
+#else
+	REGISTERED = true;
+#endif
 
 	if (NAG && (!REGISTERED))
 	{
@@ -134,17 +140,17 @@ BMenuItem *NewMItem;
 	/*
 	 * Add the File Menu
 	 */
-	FileM = new BMenu("File");
+	FileM = new BMenu(_("MENU_FILE","File"));
 
-	NewMItem = new BMenuItem("New Game", 
+	NewMItem = new BMenuItem(_("MENU_ITEM_NEW_GAME","New Game"), 
 		new BMessage(NEW_MITEM), 'N');
 	FileM->AddItem(NewMItem);
 
-	NewMItem = new BMenuItem("Restart Game", 
+	NewMItem = new BMenuItem(_("MENU_ITEM_RESTART_GAME","Restart Game"), 
 		new BMessage(RESTART_MITEM), 'R');
 	FileM->AddItem(NewMItem);
 
-	NewMItem = new BMenuItem("New Game By ID", 
+	NewMItem = new BMenuItem(_("MENU_ITEM_NEW_GAME_BY_ID","New Game By ID"), 
 		new BMessage(NEWBYID_MITEM), 'I');
 	FileM->AddItem(NewMItem);
 
@@ -156,7 +162,7 @@ BMenuItem *NewMItem;
 
 	FileM->AddSeparatorItem();
 
-	NewMItem = new BMenuItem("About BShisen ...", 
+	NewMItem = new BMenuItem(_("MENU_ITEM_ABOUT_BSHISEN","About BShisen ..."), 
 		new BMessage(B_ABOUT_REQUESTED));
 	NewMItem->SetTarget(be_app);	//send it to the application, not the window
 	FileM->AddItem(NewMItem);
@@ -164,7 +170,7 @@ BMenuItem *NewMItem;
 
 	FileM->AddSeparatorItem();
 
-	NewMItem = new BMenuItem("Quit", 
+	NewMItem = new BMenuItem(_("MENU_ITEM_QUIT","Quit"), 
 		new BMessage(CLOSE_MITEM), 'Q');
 	FileM->AddItem(NewMItem);
 
@@ -175,9 +181,10 @@ BMenuItem *NewMItem;
 	/*
 	 * Add the edit menu
 	 */
-	EditM = new BMenu("Edit");
+	EditM = new BMenu(_("MENU_EDIT","Edit"));
 
-	NewMItem = new BMenuItem("Undo", new BMessage(UNDO_MITEM), 'Z');
+	NewMItem = new BMenuItem(_("MENU_ITEM_UNDO","Undo"), 
+		new BMessage(UNDO_MITEM), 'Z');
 
 	EditM->AddItem(NewMItem);
 
@@ -186,9 +193,9 @@ BMenuItem *NewMItem;
 	/*
 	 * Add the Game menu
 	 */
-	GameM = new BMenu("Game");
+	GameM = new BMenu(_("MENU_GAME","Game"));
 
-	NewMItem = new BMenuItem("Suggest Move", 
+	NewMItem = new BMenuItem(_("MENU_ITEM_SUGGEST_MOVE","Suggest Move"), 
 		new BMessage(SUGGEST_MITEM), 'G');
 
 	GameM->AddItem(NewMItem);
@@ -199,7 +206,7 @@ BMenuItem *NewMItem;
 	 * Create the size submenu
 	 */
 
-	SizeM = new BMenu("Size");
+	SizeM = new BMenu(_("MENU_ITEM_SIZE","Size"));
 
 	NewMItem = new BMenuItem("14 x 6", new BMessage(SIZE_14x6_MITEM));
 	SizeM->AddItem(NewMItem);
@@ -223,23 +230,41 @@ BMenuItem *NewMItem;
 
 	GameM->AddSeparatorItem();
 
-	NewMItem = new BMenuItem("Hall of Fame", new BMessage(HALL_MITEM), 'H');
+	NewMItem = new BMenuItem(_("MENU_ITEM_HALL_OF_FAME","Hall of Fame"), 
+		new BMessage(HALL_MITEM), 'H');
 	GameM->AddItem(NewMItem);
 	
-	SoundMItem = new BMenuItem("Sound", new BMessage(SOUND_MITEM));
+	SoundMItem = new BMenuItem(_("MENU_ITEM_SOUND","Sound"), 
+		new BMessage(SOUND_MITEM));
 	GameM->AddItem(SoundMItem);
 	
-	NewMItem = new BMenuItem("Preferences", new BMessage(PREFERENCES_MITEM));
+	NewMItem = new BMenuItem(_("MENU_ITEM_PREFERENCES","Preferences"), 
+		new BMessage(PREFERENCES_MITEM));
 	GameM->AddItem(NewMItem);
 	
-	NewMItem = new BMenuItem("Pause", new BMessage(PAUSE_MITEM), 'A');
+	NewMItem = new BMenuItem(_("MENU_ITEM_PAUSE","Pause"), 
+		new BMessage(PAUSE_MITEM), 'A');
 	GameM->AddItem(NewMItem);
 
 	bm->AddItem(GameM);
 
+#ifdef MULTI_TILE
+	// tile menu
+	TileM = new BMenu(_("MENU_TILES","Tiles"));
+	TileM->SetRadioMode(true);
+	NewMItem = new BMenuItem(_("MENU_ITEM_STANDARD","Standard"), 
+		new BMessage(STANDARD_MITEM));
+	NewMItem->SetMarked(true);
+	TileM->AddItem(NewMItem);
+	TileM->AddSeparatorItem();
+	// call function to scan for tiles...
+	tiles.MakeTileMenu(TileM);
+	bm->AddItem(TileM);
+#endif
+
 	BackGround->AddChild(bm);
 
-	srandom( (time(NULL) >> 4) & 0xffff       );
+	srandom( (time(NULL) >> 4) & 0xffff );
 
 
 	BRect r = BScreen(this).Frame();
@@ -776,7 +801,7 @@ bool was_suggest = false;
 	 * Make sure the timer thread isn't dead :)
 	 *
 	 */
-	struct thread_info * ti = new thread_info;
+	thread_info * ti = new thread_info;
 	status_t status;
 	status = get_thread_info(timer_thread ,ti);
 
@@ -1004,6 +1029,7 @@ bool was_suggest = false;
 
 			//if (Pause) Pause--;
 		}
+		else Show();
 		//while (IsHidden()) Show();
 		
 		break;

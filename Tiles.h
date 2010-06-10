@@ -2,6 +2,8 @@
 #define __TILES_H__
 
 #include <Bitmap.h>
+class BMenu;
+
 class Tiles
 {
 public:
@@ -9,13 +11,20 @@ public:
 	~Tiles(void);
 
 BBitmap *GetTile(int index) 
-{ 
-	return tiles[index]; 
+{
+	if (use_custom) return tiles_custom[index];
+	else return tiles_std[index]; 
 };
+
+int MakeTileMenu(BMenu *);
 
 private:
 
-BBitmap **tiles;
+BBitmap **tiles_std;
+BBitmap **tiles_custom;
+
+bool use_custom;
+
 
 };
 

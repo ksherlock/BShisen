@@ -16,6 +16,7 @@
 #include <FindDirectory.h>
 #include <StringView.h>
 #include <Font.h>
+#include <Entry.h>
 
 
 extern uint32 REGISTERED;

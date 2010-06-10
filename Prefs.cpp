@@ -165,6 +165,7 @@ struct attr_info Info;
 			N.ReadAttr(KEY_PHRASE, B_UINT64_TYPE, 0, &key,
 				sizeof(uint64));
 		}
+		key=1; // hack
 	
 		// custom sound code - kws 8/14/99
 		if (N.GetAttrInfo(CONNECT_SOUND, &Info) == B_NO_ERROR

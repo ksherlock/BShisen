@@ -6,7 +6,7 @@
  */
 
 #include <Application.h>
-
+#include "YLanguageClass.h"
 
 class AboutWindow;
 class GameWindow;
