@@ -1,0 +1,22 @@
+Mar 4th 1999
+ KWS
+o changed class board implementation to be reentrant in all cases.
+ No more fiddling with data & faking it.
+
+o ID_win.cpp - got rid of gcc/alpha warning
+
+Mar 3rd
+o Changed to store/retrieve scores from B_COMMON_SETTINGS/BShisen.scores
+o Resized pause window
+
+Mar 2nd, 1999
+Added SetCursor(B_HAND_CURSOR) after prompting for high score name
+
+ToDo: prevent crashing in do_mouse_moved
+
+ KWS - Feb 20th, 1999
+
+Fixed bug where restart wouldn't clear the board first
+
+Added checking to determine if any moves are left (functional?)
+

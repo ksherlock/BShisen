@@ -1,0 +1,63 @@
+- Allow user to select sound files to play instead of default ones
+- Make graphic tiling on by default
+
+-Network 2/player play:
+1) Play against each other, same game # & size to see who
+wins first
+2) play one board, both players removing tiles
+
+
+*************
+
+
+
+- Fix pause Window
+- Make Hall of fame, Pause Window, & Prefs Window asyncronous
+- adjust name entry area "Enter your name for posterity"
+
+-Preferences to prefer quietness
+-Menu to enable/disable sound - DONE
+
+-? tile - DONE
+- Fix up tiles -/DONE
+- Move tiles to rsrc -DONE
+ --> raw IDs # 0-35 -DINE
+- Move S to rsrc -DONE
+- move sound to rsrc -DONE
+-------
+
+
+
+
+Is tps wrong??? ->tiles per minute - FIXED
+Hide main window before showing high scores when game is done -FIXED
+Pause when game is done :) -FIXED
+
+Game ranking is backwards - high numbers are good! -FIXED
+Pause game when displaying 'no moves left' message -FIXED
+
+Game numbers suck - better random # generator
+Make pause window be titled. - do it myself  - FIXED
+
+HAll of fame will do incorrect deletions (allow > 5 for each size)  -FIXED
+
+Hall of famesticks #s in backwards (?) -- FIXED
+Show Time in 00:00:00 format -- FIXED
+
+Always prompts for name, even when it shouldn't -- FIXED
+
+Prevent user input when showing suggestions./Allow reentrency? 
+	-- NO LONGER RELEVANT
+
+
+Preferences:
+	Background color	--DONE
+	Highlight Color		-- NOT YET
+	Line Color		-- NOT YET
+	Background pic:tiled/centered	--DONE
+
+
+Background pic won't disappear whn set to "" -- FIXED
+
+top of first row of Tiled pics covered by menu bar
+In centered pics, account for menu bar

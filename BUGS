@@ -1,0 +1,10 @@
+Sometimes, fast clicking can result in multiple tiles being selected.
+	
+o select is only being called once.
+o connect3 is only being called once
+o MessageREcieved is only being called once
+
+o Bitmap control?
+
+o 2 mousedowns, 1 invoke...
+o 2 pmousedowns, 1 invoke (threads spawned)
