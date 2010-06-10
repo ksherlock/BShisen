@@ -20,7 +20,7 @@
 #include <Screen.h>
 #include <Sound.h>
 #include <SoundPlayer.h>
-#include <FileGameSound.h>
+#include <SimpleGameSound.h>
 #include <Entry.h>
 #include <MediaFile.h>
 
@@ -32,6 +32,7 @@
 
 #include "ID_Win.h"
 #include "GameWindow.h"
+#include "BitmapControl.h"
 #include "pics.h"
 #include "res.h"
 
@@ -46,22 +47,23 @@ extern uint32 NAG;
 
 GameWindow::GameWindow(): 
 	BWindow(BRect(10, 50, 100, 100), "BShisen", 
-		B_TITLED_WINDOW, B_NOT_RESIZABLE | B_NOT_ZOOMABLE),
+		B_TITLED_WINDOW, 
+		B_NOT_RESIZABLE | B_NOT_ZOOMABLE | B_ASYNCHRONOUS_CONTROLS),
 	board(),
 	hall(NULL),
 	prefs(NULL),
-	Time_String(NULL),
-	Remain_String(NULL),
-	Number_String(NULL),
-	__forceQuit(false),
 	controls(NULL),
 	BackGround(NULL),
 	BackGround2(NULL),
+	BackBitmap(NULL),
+	Time_String(NULL),
+	Number_String(NULL),
+	Remain_String(NULL),
 	Line1(NULL),
 	Line2(NULL),
 	Line3(NULL),
 	connect_thread(-1),
-	BackBitmap(NULL)
+	__forceQuit(false)
 {
 BMenuBar *bm;
 BMenuItem *NewMItem;
@@ -93,7 +95,7 @@ BMenuItem *NewMItem;
 
 	if (NAG && (!REGISTERED))
 	{
-		BAlert *b = new BAlert( "", "You've now used BShisen for more than 5 days "
+		BAlert *b = new BAlert( "", "You've now used BShisen for more than 7 days "
 								"and have probably had quite a bit of fun.  Please "
 								"support the BeOS and those that bring you high "
 								"quality, fun software by registering.",
@@ -108,7 +110,7 @@ BMenuItem *NewMItem;
 		BAlert *b = new BAlert("", "Welcome to BShisen!  I hope you have fun "
 									"with this fun and addictive game.  Please "
 									"remember that BShisen is SHAREWARE.  To "
-									"legally use it after a 5 day trial period, "
+									"legally use it after a 7 day trial period, "
 									"you must pay $15.  See the README for more "
 									"details.  Have fun!",
 									"Ok");
@@ -429,7 +431,7 @@ entry_ref ref;
 			if (f->InitCheck() == B_NO_ERROR)
 			{
 				delete f;
-				CustomConnectSound = new BFileGameSound(&ref, false);
+				CustomConnectSound = new BSimpleGameSound(&ref);
 				if (CustomConnectSound->InitCheck() != B_OK)
 				{
 					prefs->SetCustomConnect(false);
@@ -473,7 +475,7 @@ entry_ref ref;
 			if (f->InitCheck() == B_NO_ERROR)
 			{
 				delete f;
-				CustomNoConnectSound = new BFileGameSound(&ref, false);
+				CustomNoConnectSound = new BSimpleGameSound(&ref);
 				if (CustomNoConnectSound->InitCheck() != B_OK)
 				{
 					prefs->SetCustomNoConnect(false);

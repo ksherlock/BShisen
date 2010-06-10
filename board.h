@@ -23,7 +23,7 @@ public:
 
 	board();
 	board(int height, int width, int key);
-	~board();
+virtual	~board();
 
 virtual void	new_game(int height, int width, int key, int num_tiles = 36);
 int	get(int h, int w) const;

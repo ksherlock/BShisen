@@ -27,14 +27,11 @@ virtual void 	SetValue(int32 value);
 virtual void 	Draw(BRect updateRect);
 virtual status_t SetMessage(BMessage *);
 virtual void	MouseDown(BPoint point);
+virtual void	MouseMoved(BPoint, uint32, const BMessage *);
+virtual void	MouseUp(BPoint);
 
 
 private:
-
-static	int32	ThreadHandler(void *);
-thread_id 	my_thread;
-
-void		pMouseDown(void);	//private mousedown function
 
 int32		value;	//cached value;
 BBitmap *	OnPic;

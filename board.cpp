@@ -14,15 +14,18 @@
 board::board():
 	h(0),
 	w(0),
-	count(0),
-	b(NULL)
+	b(NULL),
+	count(0)
 {
 	enable_undo(false);
 }
 
 
 board::board(int height, int width, int key):
-	h(height + 2), w(width + 2), k(key), b(NULL)
+	k(key),
+	h(height + 2), 
+	w(width + 2), 
+	b(NULL)
 {
 int i, j;
 

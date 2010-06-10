@@ -99,7 +99,7 @@ char *text;
 class HSList: public BListItem
 {
 public:
-	HSList(bool isMaster = false);
+	HSList();
 	~HSList();
 
 void	SetName(const char *);
@@ -119,7 +119,6 @@ float		GetTilesPerSec(void) const RETURN(tps);
 virtual void DrawItem(BView *owner, BRect itemRect, bool drawEverything = false);
 
 private:
-	bool master;
 	float tps;
 	char *name;
 	unsigned long gameID;

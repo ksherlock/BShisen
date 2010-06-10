@@ -28,9 +28,9 @@ Hall::Hall(void):
 	List3(NULL),
 	List4(NULL),
 	List5(NULL),
+	path(NULL),
 	_changed(false),
-	_count(0),
-	path(NULL)
+	_count(0)
 {
 BFile F;
 off_t size;
@@ -50,9 +50,9 @@ int i;
 	 * Find the scores file, if it exists
 	 *
 	 */
-	
+	/*B_COMMON_SETTINGS_DIRECTORY*/
 	if (
-		find_directory(B_USER_SETTINGS_DIRECTORY/*B_COMMON_SETTINGS_DIRECTORY*/, path) == B_NO_ERROR
+		find_directory(B_USER_SETTINGS_DIRECTORY, path) == B_NO_ERROR
 		&& path->Append(FILE_NAME, true) == B_NO_ERROR
 		&& F.SetTo(path->Path(), B_READ_ONLY) == B_NO_ERROR)
 	{
@@ -183,7 +183,6 @@ HSList *List2 = (HSList *)*(void **)L2;
 // returns true if score is destined for greatness
 bool Hall::JudgeScore(unsigned long gametime, unsigned long game, int tiles)
 {
-float tps = (tiles * 1.0)/gametime;
 bool Yes = false;
 
 BList *L;
@@ -389,12 +388,12 @@ void HighScores::MessageReceived(BMessage *msg)
 #define ACCEPT_BUTTON 'acce'
 
 AskName::AskName():
-	text(NULL),
-	Text(NULL), 
 	BWindow(BRect(100, 100, 500, 200), "Enter your name",
 		B_TITLED_WINDOW,	
 		B_NOT_RESIZABLE | B_NOT_CLOSABLE | B_NOT_ZOOMABLE
-		| B_NOT_MINIMIZABLE)
+		| B_NOT_MINIMIZABLE),
+	Text(NULL),
+	text(NULL)
 {
 BView *back;
 BButton * Accept;
@@ -488,11 +487,10 @@ void AskName::MessageReceived(BMessage *msg)
  *
  */
 
-HSList::HSList(bool IsMaster):
+HSList::HSList():
 	BListItem(),
-	master(IsMaster),
-	name(NULL),
 	tps(0),
+	name(NULL),
 	gameID(0),
 	gameTime(0),
 	numTiles(0),
@@ -518,10 +516,10 @@ char *buffer;
 		if (gameTime)
 		{
 			sprintf(buffer, "%.2d:%.2d:%.2d%c",
-				(gameTime /3600),
-				(gameTime / 60) %60,
-				gameTime % 60,
-				0);
+				(int)(gameTime /3600),
+				(int)(gameTime / 60) %60,
+				(int)gameTime % 60,
+				(int)0);
 			owner->DrawString(buffer);
 		}
 
@@ -542,7 +540,7 @@ char *buffer;
 		owner->MovePenTo(rect.left+400, rect.bottom-2);
 		if (gameID)
 		{
-			sprintf(buffer, "%d%c", gameID, 0);
+			sprintf(buffer, "%d%c", (int)gameID, (int)0);
 			owner->DrawString(buffer);
 		}
 

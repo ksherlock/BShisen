@@ -6,6 +6,9 @@
 #include <OS.h>
 #include <Entry.h>
 #include "res.h"
+#include "Prefs.h"
+#include <FindDirectory.h>
+#include <Path.h>
 
 /*
  * $Id: Shisen.cpp,v 1.3 1999/07/09 05:21:55 baron Exp baron $
@@ -57,7 +60,37 @@ app_info app;
 	 * 3) subtract
 	 * if > 3 days, nag++
 	 */
+	// check ~/config/settings/BShisen_prefs
+
+	BPath path;
+	BEntry entry;
 	
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path) == B_OK
+		&& path.Append(PREFS_FILE_NAME, true) == B_OK
+		&& entry.SetTo(path.Path(), true) == B_OK)
+	{
+		time_t t_t = 0;
+		time_t c_t;
+		
+		if (entry.GetCreationTime(&c_t) == B_OK)
+		{
+			//ok, file exists.  Check the creation date & see if it was > 7 days ago
+			t_t = (time_t)real_time_clock();
+			
+			if (t_t > c_t)
+			{
+				t_t -= c_t;
+				
+				// t_t == # of secs between when file was created & now
+				
+				if (t_t > 7 * 24 * 60 * 60) NAG = true;
+			}
+		}
+	}	
+
+
+
+#if 0	
 	if (GetAppInfo(&app) == B_OK)
 	{
 		BEntry entry;
@@ -72,6 +105,7 @@ app_info app;
 		if (t_t > 5 * 24 * 60 * 60)
 			NAG = true;
 	}
+#endif
 
 	game = new GameWindow;
 	game->Show();	
@@ -113,7 +147,7 @@ thread_id id;
 		about->AddChild(back);
 	
 	
-		str = new BStringView(BRect(100, 10, 310, 30), NULL, "BShisen 1.1");
+		str = new BStringView(BRect(100, 10, 310, 30), NULL, "BShisen 1.1.1");
 		str->SetFontSize(12);
 		str->SetHighColor(0,255,0);
 		back->AddChild(str);

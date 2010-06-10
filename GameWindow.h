@@ -13,7 +13,7 @@
 #include <Sound.h>
 
 #include "board.h"
-#include "BitmapControl.h"
+
 #include "Tiles.h"
 #include "array2d.cpp"			//templated 2d array support
 #include "Hall.h"
@@ -21,7 +21,8 @@
 
 
 class BMenuItem;
-class BFileGameSound;
+class BSimpleGameSound;
+class BitmapControl;
 
 const int SUGGEST_TIME = 30;		// suggest move adds 30 secs
 
@@ -142,8 +143,8 @@ BSound *sound_ok;
 BSound *sound_bad;
 int MakeNoise;
 
-BFileGameSound *CustomConnectSound;
-BFileGameSound *CustomNoConnectSound;
+BSimpleGameSound *CustomConnectSound;
+BSimpleGameSound *CustomNoConnectSound;
 bool CustomConnect;
 bool CustomNoConnect;
 
