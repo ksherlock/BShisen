@@ -30,7 +30,7 @@ void	SetData(TYPE T, uint32 x, uint32 y)
 	{
 		if (x > _x || y > _y)
 		{
-			fprintf(stderr, "SetData Out of Bounds: x = %d y = %d\n", x, y);
+			fprintf(stderr, "SetData Out of Bounds: x = %ld y = %ld\n", x, y);
 			exit(-1);
 		}
 		//if ( x < _x && y < _y)
@@ -41,15 +41,15 @@ TYPE	GetData(uint32 x, uint32 y)
 	{
 		if (x > _x || y > _y)
 		{
-			fprintf(stderr, "GetData Out of Bounds: x = %d y = %d\n", x, y);
+			fprintf(stderr, "GetData Out of Bounds: x = %ld y = %ld\n", x, y);
 			exit(-1);
 		}
 //		if (x < _x && y < _y)
 			return data[x][y];
 		#if 0
 		else {
-			fprintf(stderr, "\n\nx = %d, y = %d\n", x, y);
-			fprintf(stderr, "_x = %d, _y = %d\n", _x, _y);
+			fprintf(stderr, "\n\nx = %ld, y = %ld\n", x, y);
+			fprintf(stderr, "_x = %ld, _y = %ld\n", _x, _y);
 			
 			assert(!"Array out of bounds");
 		}

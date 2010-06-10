@@ -21,6 +21,7 @@
 
 
 class BMenuItem;
+class BFileGameSound;
 
 const int SUGGEST_TIME = 30;		// suggest move adds 30 secs
 
@@ -141,6 +142,12 @@ BSound *sound_ok;
 BSound *sound_bad;
 int MakeNoise;
 
+BFileGameSound *CustomConnectSound;
+BFileGameSound *CustomNoConnectSound;
+bool CustomConnect;
+bool CustomNoConnect;
+
+
 BMenuItem *SoundMItem;
 
 int	Pause;
@@ -155,6 +162,8 @@ long Time;
 Hall *hall;
 Prefs *prefs;
 
+array2d<BitmapControl *> *controls;
+
 BView *BackGround;
 BView *BackGround2;
 BBitmap *BackBitmap;
@@ -168,7 +177,7 @@ BMenu *SizeM;
 
 Tiles tiles;		// class which provides the BBitmaps for the tiles
 
-array2d<BitmapControl *> *controls;
+
 
 BStringView *Time_String;	// string that contains the time
 BStringView *Number_String;	// string that contains the game #

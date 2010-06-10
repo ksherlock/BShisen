@@ -113,7 +113,7 @@ thread_id id;
 		about->AddChild(back);
 	
 	
-		str = new BStringView(BRect(100, 10, 310, 30), NULL, "BShisen 1.0");
+		str = new BStringView(BRect(100, 10, 310, 30), NULL, "BShisen 1.1");
 		str->SetFontSize(12);
 		str->SetHighColor(0,255,0);
 		back->AddChild(str);

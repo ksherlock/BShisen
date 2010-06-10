@@ -52,7 +52,7 @@ int i;
 	 */
 	
 	if (
-		find_directory(B_COMMON_SETTINGS_DIRECTORY, path) == B_NO_ERROR
+		find_directory(B_USER_SETTINGS_DIRECTORY/*B_COMMON_SETTINGS_DIRECTORY*/, path) == B_NO_ERROR
 		&& path->Append(FILE_NAME, true) == B_NO_ERROR
 		&& F.SetTo(path->Path(), B_READ_ONLY) == B_NO_ERROR)
 	{

@@ -20,7 +20,9 @@
 #include <Screen.h>
 #include <Sound.h>
 #include <SoundPlayer.h>
+#include <FileGameSound.h>
 #include <Entry.h>
+#include <MediaFile.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -63,6 +65,7 @@ GameWindow::GameWindow():
 {
 BMenuBar *bm;
 BMenuItem *NewMItem;
+
 
 	BackGround = new BView(Bounds(), "", B_FOLLOW_ALL, B_WILL_DRAW);
 	AddChild(BackGround);
@@ -114,6 +117,11 @@ BMenuItem *NewMItem;
 	
 		prefs->WritePrefs();	//write the prefs to fake out being fresh
 	}
+
+	CustomConnectSound = NULL;
+	CustomNoConnectSound = NULL;
+	CustomConnect = false;
+	CustomNoConnect	= false;
 
 
 	/*
@@ -300,6 +308,7 @@ BMenuItem *NewMItem;
 		MakeNoise = true;
 		SoundMItem->SetMarked(true);
 		player = new BSoundPlayer(&fmt);
+		//player = new BSoundPlayer();
 		player->Start();
 	}
 	else
@@ -339,16 +348,27 @@ GameWindow::~GameWindow()
 
 void GameWindow::PairRemoved(void)
 {
-	if (MakeNoise && player)
+	if (!MakeNoise) return;
+	
+	if (CustomConnect && CustomConnectSound)
+	{
+		CustomConnectSound->StartPlaying();
+	}
+	else if (player)
 	{
 		player->StartPlaying(sound_ok);
-	
 	}
 }
 
 void GameWindow::match_failed(void)
 {
-	if (MakeNoise && player)
+	if (!MakeNoise) return;
+	
+	if (CustomNoConnect && CustomNoConnectSound)
+	{
+		CustomNoConnectSound->StartPlaying();
+	}
+	else if (player)
 	{
 		player->StartPlaying(sound_bad);
 	}
@@ -360,17 +380,18 @@ void GameWindow::EnactPrefs(void)
 {
 
 BBitmap *pic;
-char const *tmp;
+char const *cp;
+entry_ref ref;
 
 	pic = NULL;
-	tmp = prefs->GetPicPath();
+	cp = prefs->GetPicPath();
 	
-	if (BackBitmapPath != tmp)
+	if (BackBitmapPath != cp)
 	{
-		BackBitmapPath = tmp;
+		BackBitmapPath = cp;
 		
-		if (tmp && tmp[0])
-			pic = BTranslationUtils::GetBitmap(tmp);
+		if (cp && *cp)
+			pic = BTranslationUtils::GetBitmap(cp);
 
 		if (pic)
 		{
@@ -389,6 +410,96 @@ char const *tmp;
 	FixBitmap();
 	BackGround->Invalidate();
 
+	// custom sounds 
+	cp = prefs->GetConnectSound();
+	if (cp && *cp)
+	{
+		BMediaFile *f;
+		BEntry entry(cp, true);	
+	
+		if (entry.InitCheck() == B_OK && entry.Exists() && entry.GetRef(&ref) == B_OK)
+		{
+			if (CustomConnectSound)
+			{
+				CustomConnectSound->StopPlaying();
+				delete CustomConnectSound;
+				CustomConnectSound = NULL;
+			}
+			f = new BMediaFile(&ref);
+			if (f->InitCheck() == B_NO_ERROR)
+			{
+				delete f;
+				CustomConnectSound = new BFileGameSound(&ref, false);
+				if (CustomConnectSound->InitCheck() != B_OK)
+				{
+					prefs->SetCustomConnect(false);
+					prefs->SetConnectSound(NULL);
+					delete CustomConnectSound;
+					CustomConnectSound = NULL;
+				}
+			}
+			else
+			{
+				delete f;
+				prefs->SetConnectSound(NULL);
+				prefs->SetCustomConnect(false);
+			}		
+		}
+		else
+		{
+			prefs->SetConnectSound(NULL);
+			prefs->SetCustomConnect(false);
+		}
+	}
+	else prefs->SetCustomConnect(false);
+	
+	cp = prefs->GetNoConnectSound();
+	if (cp && *cp)
+	{
+		BEntry entry(cp, true);	
+		BMediaFile *f;
+		
+		if (entry.InitCheck() == B_OK && entry.Exists() && entry.GetRef(&ref) == B_OK)
+		{
+			if (CustomNoConnectSound)
+			{
+				CustomNoConnectSound->StopPlaying();
+				delete CustomNoConnectSound;
+				CustomNoConnectSound = NULL;
+			}
+			
+			f = new BMediaFile(&ref);
+			
+			if (f->InitCheck() == B_NO_ERROR)
+			{
+				delete f;
+				CustomNoConnectSound = new BFileGameSound(&ref, false);
+				if (CustomNoConnectSound->InitCheck() != B_OK)
+				{
+					prefs->SetCustomNoConnect(false);
+					prefs->SetNoConnectSound(NULL);
+					delete CustomNoConnectSound;
+					CustomNoConnectSound = NULL;
+				}
+			}
+			else
+			{
+				delete f;
+				prefs->SetNoConnectSound(NULL);
+				prefs->SetCustomNoConnect(false);			
+			}
+		}
+		else
+		{
+			prefs->SetNoConnectSound(NULL);
+			prefs->SetCustomNoConnect(false);
+		}
+	}
+	else prefs->SetCustomNoConnect(false);
+	
+		
+	CustomConnect = prefs->GetCustomConnect();
+	CustomNoConnect	= prefs->GetCustomNoConnect();
 }
 
 
@@ -927,7 +1038,7 @@ bool was_suggest = false;
 
 		uint32 _x = Bm->FindInt32("x_pos");
 		uint32 _y = Bm->FindInt32("y_pos");
-		uint32 _t = Bm->FindInt32("tile");
+		//uint32 _t = Bm->FindInt32("tile");
 		uint32 _b = Bm->FindInt32("mouse_buttons");
 
 		if (_b == B_SECONDARY_MOUSE_BUTTON) ;
@@ -1033,8 +1144,8 @@ void GameWindow::new_game(int h, int w, int key, int tiles)
         if (controls)
         {
             BitmapControl *BC;
-            int x;
-			int y;
+            unsigned int x;
+			unsigned int y;
 
 				Lock();
                 for (x = 0; x < controls->X(); x++)
